@@ -3,16 +3,16 @@ package JAVA_OOP.seminar1;
 import java.util.ArrayList;
 import java.util.Iterator;
 
-public class Tree_Iterator implements Iterator<Human>{
-    private ArrayList<Human> humans;
+public class Tree_Iterator<T extends Human> implements Iterator<T>{
+    private ArrayList<T> humans;
     private int id;
     
-    public Tree_Iterator(ArrayList<Human> humans) {
+    public Tree_Iterator(ArrayList<T> humans) {
         this.humans = humans;}
 
     @Override
     public boolean hasNext() {return id<humans.size();}
 
     @Override
-    public Human next() {return humans.get(id++);}
+    public T next() {return humans.get(id++);}
 }

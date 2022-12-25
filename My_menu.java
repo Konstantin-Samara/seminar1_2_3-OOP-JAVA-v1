@@ -1,7 +1,11 @@
 package JAVA_OOP.seminar1;
+import java.util.ArrayList;
 import java.util.Scanner;
 
-public class My_menu {
+public class My_menu <T extends Human>{
+
+    public void print_list(ArrayList<String> list1) {
+        for (String item : list1) {System.out.println(item);}}
 
     public Integer my_input (String str, int n1, int n2) {
         int inp = 0;
@@ -46,8 +50,8 @@ public class My_menu {
         if(sel==6) scan.close();
         return sel;} 
     
-    public Human add_menu(int max_id) {
-        Human human = new Human();
+    public T add_menu(int max_id) {
+        T human = (T) new Human();
         Scanner scan = new Scanner(System.in);
         System.out.println("Создается новый объект с ID "+(max_id+1)+" : ");
         human.setId(max_id+1);

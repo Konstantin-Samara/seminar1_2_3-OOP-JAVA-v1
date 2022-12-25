@@ -4,19 +4,20 @@ import java.io.Serializable;
 import java.util.ArrayList;
 import java.util.Iterator;
 
-public class Tree implements Serializable, Iterable<Human>{
+public class Tree<T extends Human> implements Serializable, Iterable<T>{
     private int max_id;
-    private ArrayList<Human> humans = new ArrayList<>();
+    private ArrayList<T> humans = new ArrayList<>();
     private Writeable writeable; 
 
 // public Tree_class(int inp_max_id, ArrayList<Human> inp_humans){
 //     this.max_id = inp_max_id;
 //     this.humans = inp_humans;}
 
-    public Tree read() {return writeable.read();}
+    public Tree read () {return writeable.read();}
     public void save()  {writeable.save(this);}
     public void setWriteable(Writeable writeable) {this.writeable = writeable;}
-    public String getFamilyType(Human my_human, Human human) {
+
+    public String getFamilyType(T my_human, T human) {
         String str1 = "Не является генетическим родственником.";
         int gender;
         if (my_human.getMan()) {gender = 0;}
@@ -91,83 +92,60 @@ public class Tree implements Serializable, Iterable<Human>{
         if (my_human.getMarried()!=null&&my_human.getMarried().equals(human)) return type8[gender];
         return str1;}
 
-    public Human getHuman_id(int id) {   
-        Human human = new Human();
-        for (Human item : this) {if (item.getId()==id) human = item;}
+    public T getHuman_id(int id) {   
+        T human = (T) new Human();
+        for (T item : this) {if (item.getId()==id) human = item;}
         return human;}
 
     public void create_tree() {
-        for (Human item : this) {
-            // ищем супругов
-                if (item.getId_married()!=0) 
-                    item.setMarried(getHuman_id(item.getId_married()));
-            // ищем родителей
-                if (item.getId_father()>0) 
-                    item.setFather(getHuman_id(item.getId_father()));
-                if (item.getId_mother()>0) 
-                    item.setMother(getHuman_id(item.getId_mother()));
-            // ищем детей
-                if (item.getId_father()>0) 
-                    getHuman_id(item.getId_father()).addChild(item);
-                if (item.getId_mother()>0) 
-                    getHuman_id(item.getId_mother()).addChild(item);}}
+        for (T item : this) {item.childClear();}
+        for (T item : this) {
+        // ищем супругов
+            if (item.getId_married()!=0) 
+                item.setMarried(getHuman_id(item.getId_married()));
+        // ищем родителей
+            if (item.getId_father()>0) 
+                item.setFather(getHuman_id(item.getId_father()));
+            if (item.getId_mother()>0) 
+                item.setMother(getHuman_id(item.getId_mother()));
+        // ищем детей
+            if (item.getId_father()>0) 
+                getHuman_id(item.getId_father()).addChild(item);
+            if (item.getId_mother()>0) 
+                getHuman_id(item.getId_mother()).addChild(item);}}
 
     public void add_human() {
         My_menu my_menu = new My_menu();
-            // boolean test = true;
-            // while (test) {
-        Human human = new Human();
-        human = my_menu.add_menu(this.max_id);
-
-// Здесь может быть бесконечное кол-во проверок корректности введенных данных 
-// (пол, возраст, несовпадение жены-матери-отца и т.п.)
-
-            // if (human.getId_father()!=0)
-            //     human.setFather(getHuman_id(human.getId_father()));
-            // if (human.getId_mother()!=0)           
-            //     human.setMother(getHuman_id(human.getId_mother()));
-            // if (human.getId_married()!=0)
-            //     human.setMarried(getHuman_id(human.getId_married()));
-
-            // if (human.getId_father()==human.getId_mother()||
-            // human.getId()==human.getFather().getId()||
-            // human.getId()==human.getMother().getId()||
-            // human.getId()==human.getMarried().getId()||
-            // human.getFather().getId()==human.getMarried().getId()||
-            // human.getMother().getId()==human.getMarried().getId()||
-            // human.getMarried().getMan()==human.getMan()||
-            // human.getFather().getMan()==human.getMother().getMan()||
-            // human.getbirth_year()<human.getFather().getbirth_year()||
-            // human.getbirth_year()<human.getMother().getbirth_year())
-            //     {System.out.println("Вы ввели некорректные данные. Попробуйте еще раз.");}
-            // else {
-            // test = false;
+        T human = (T) new Human();
+        human = (T) my_menu.add_menu(this.max_id);
         this.humans.add(human);
         this.setMax_id(++this.max_id);
-        this.create_tree();
-            // }}
-        }
+        this.create_tree();}
 
     public void getHuman_info_id() {
+        ArrayList<String> list1 = new ArrayList<>();
         My_menu my_menu = new My_menu();
-        Human human = getHuman_id(my_menu.menu_getHuman_info_id(this.getMax_id()));
-        System.out.println("\nИсследуется объект : "+human.toString()+"\n");
-        for (Human item : this) {
+        T human = getHuman_id(my_menu.menu_getHuman_info_id(this.getMax_id()));
+        list1.add("\nИсследуется объект : "+human.toString()+"\n");
+        for (T item : this) {
         if (!item.equals(human)&&
         !getFamilyType(item,human).equals("Не является генетическим родственником."))    
-            System.out.println(getFamilyType(item,human)+ " : "+item.toString());}}
+            list1.add(getFamilyType(item,human)+ " : "+item.toString());}
+        my_menu.print_list(list1);}
 
     public void h2h_community() {
+        ArrayList<String> list1 = new ArrayList<>();
         My_menu my_menu = new My_menu();
         int[] n = my_menu.menu_h2h_community(this.getMax_id());
-        System.out.println("\n"+this.getHuman_id(n[0]).toString());
-        System.out.println(getFamilyType(this.getHuman_id(n[0]),this.getHuman_id(n[1]))+" для");
-        System.out.println(this.getHuman_id(n[1]).toString());} 
+        list1.add("\n"+this.getHuman_id(n[0]).toString());
+        list1.add(getFamilyType(this.getHuman_id(n[0]),this.getHuman_id(n[1]))+" для");
+        list1.add(this.getHuman_id(n[1]).toString());
+        my_menu.print_list(list1);} 
         
-    public ArrayList<Human> getHumans() {
+    public ArrayList<T> getHumans() {
         return humans;}
         
-    public void setHumans(ArrayList<Human> humans) {
+    public void setHumans(ArrayList<T> humans) {
         this.humans = humans;}
     
     public int getMax_id() {
@@ -176,6 +154,8 @@ public class Tree implements Serializable, Iterable<Human>{
         this.max_id = max_id;}
 
     @Override
-    public Iterator<Human> iterator() {
-        return new Tree_Iterator(humans);}
+    public Iterator<T> iterator() {
+        return new Tree_Iterator<T>(humans);}
+
+    
 }

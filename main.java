@@ -3,7 +3,7 @@ package JAVA_OOP.seminar1;
 
 public class main {
     public static void main(String[] args) {
-        Tree my_tree = new Tree();
+        Tree<Human> my_tree = new Tree<>();
         My_menu my_menu = new My_menu();
         int sel = 0;       
 
@@ -29,8 +29,10 @@ public class main {
                     break;
             case 3: my_tree.h2h_community();
                     break;
+
             case 4: my_tree.add_human(); 
                     break;
+
             case 5: my_tree.getHuman_info_id();
                     break;
             case 6: break;}}
